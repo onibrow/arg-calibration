@@ -1,5 +1,7 @@
 # Arias Research Group - Force, Strain, and Torsion Calibration
 
+[First Demo](https://photos.app.goo.gl/k4PucZ8dLAiMEf3GA)
+
 [TB6600 Stepper Motor Driver](https://www.dfrobot.com/wiki/index.php/TB6600_Stepper_Motor_Driver_SKU:_DRI0043)
 
 ![tb6600](img/tb6600.png)
