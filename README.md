@@ -9,3 +9,7 @@
 [Small Motor](https://www.pololu.com/file/0J714/SY42STH38-1684A.pdf)
 
 [1A...2B Notation vs A+...B- notation](https://groups.google.com/forum/#!topic/ultimaker/zdIKGwMXf28)
+
+https://processing.org/reference/libraries/
+
+[Small Stepper Motor Driver](https://www.pololu.com/category/229/mp6500-stepper-motor-driver-carriers)
