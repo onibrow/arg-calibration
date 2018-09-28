@@ -1,6 +1,7 @@
 int PUL=7; //define Pulse pin
 int DIR=6; //define Direction pin
 int ENA=5; //define Enable Pin
+int del=1000;
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting Stepper Motor test...");
@@ -17,9 +18,9 @@ void loop() {
     digitalWrite(DIR,LOW);
     digitalWrite(ENA,LOW);
     digitalWrite(PUL,HIGH);
-    delayMicroseconds(50);
+    delayMicroseconds(del);
     digitalWrite(PUL,LOW);
-    delayMicroseconds(50);
+    delayMicroseconds(del);
   }
   delay(500);
   Serial.println("Driving Backwards...");
@@ -28,9 +29,9 @@ void loop() {
     digitalWrite(DIR,HIGH);
     digitalWrite(ENA,LOW);
     digitalWrite(PUL,HIGH);
-    delayMicroseconds(50);
+    delayMicroseconds(del);
     digitalWrite(PUL,LOW);
-    delayMicroseconds(50);
+    delayMicroseconds(del);
   }
   delay(500);
 }

@@ -13,3 +13,5 @@
 https://processing.org/reference/libraries/
 
 [Small Stepper Motor Driver](https://www.pololu.com/category/229/mp6500-stepper-motor-driver-carriers)
+
+![wires](img/wires.jpg)
