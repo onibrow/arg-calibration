@@ -5,7 +5,8 @@ int BASE_TICKS = 5000;
 int DELAY = 25; //fast enough
 int request;
 char ESTOP = 'E';
-bool DEBUG = true;;
+bool DEBUG = true;
+String inString = "";
 
 void setup() {
   Serial.begin(9600);
@@ -19,7 +20,18 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    request = Serial.read();
+    while (Serial.available() > 0) {
+      int inChar = Serial.read();
+      if (isDigit(inChar)) {
+        inString += (char)inChar;
+      } else {
+        request = inChar;
+      }
+    } 
+
+//    long input = str.toInt();
+//    if (DEBUG) Serial.println(input);
+    
     switch (request) {
       case 97:
         if (DEBUG) Serial.println("Biggest Left");
