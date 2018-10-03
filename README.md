@@ -15,3 +15,13 @@ https://processing.org/reference/libraries/
 [Small Stepper Motor Driver](https://www.pololu.com/category/229/mp6500-stepper-motor-driver-carriers)
 
 ![wires](img/wires.jpg)
+
+Note on processing install: On my Arch Linux install, Processsing wouldn't start with the follow error:
+```java
+Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=gasp
+-Djava.ext.dirs=/usr/share/processing/java/lib/ext is not supported.  Use -classpath instead.
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+```
+
+This was fixed by going to `/usr/bin` and editting the `_JAVA_OPTIONS` variable and removing the `-Djava.ext.dirs=/usr/share/processing/java/lib/ext` option.
