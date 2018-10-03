@@ -25,3 +25,9 @@ Error: A fatal exception has occurred. Program will exit.
 ```
 
 This was fixed by going to `/usr/bin` and editting the `_JAVA_OPTIONS` variable and removing the `-Djava.ext.dirs=/usr/share/processing/java/lib/ext` option.
+
+Processing Libraries:
+
+http://lagers.org.uk/g4ptool/index.html
+
+http://www.sojamo.de/libraries/controlP5/
