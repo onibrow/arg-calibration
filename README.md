@@ -31,3 +31,5 @@ Processing Libraries:
 http://lagers.org.uk/g4ptool/index.html
 
 http://www.sojamo.de/libraries/controlP5/
+
+Another fix for processing: Processing cannot run on a non-1.6 compatible JVM. However, if your system has jdk-10 installed, it will default to jvm10, which is not 1.6 compatible. To fix this (on linux) you must change the `java` link in `/usr/share/processing` to link to point to a jvm8. For my machine, I used the command `sudo ln -sfn /usr/lib/jvm/java-8-openjdk /usr/share/processing/java` to link the jvm8 to processing. This fixed the generic issue for non 1.6 compatible compiler errors.
