@@ -14,25 +14,21 @@ String serial_list;                // list of serial ports
 int serial_list_index = 0;         // currently selected serial port 
 int num_serial_ports = 0;          // number of serial ports in the list
 
+// Comms
+//String
+
 void setup() {
-  // set the window size
-  size (640, 480);
+  size(315, 230);
   
-  // create the buttons
   btn_serial_up = new Button("^", 140, 10, 40, 20);
   btn_serial_dn = new Button("v", 140, 50, 40, 20);
   btn_serial_connect = new Button("Connect", 190, 10, 100, 25);
   btn_serial_disconnect = new Button("Disconnect", 190, 45, 100, 25);
   btn_serial_list_refresh = new Button("Refresh", 190, 80, 100, 25);
   
-  // get the list of serial ports on the computer
   serial_list = Serial.list()[serial_list_index];
-  
-  //println(Serial.list());
-  //println(Serial.list().length);
-  
-  // get the number of serial ports in the list
   num_serial_ports = Serial.list().length;
+  // GUI BUILDER
   createGUI();
 }
 
@@ -58,6 +54,7 @@ void mousePressed() {
     if (serial_port == null) {
       // connect to the selected serial port
       serial_port = new Serial(this, Serial.list()[serial_list_index], 9600);
+      // CHANGE COLOR OF CONNECT BUTTON HERE
     }
   }
   // Disconnect button clicked
@@ -66,6 +63,7 @@ void mousePressed() {
       // disconnect from the serial port
       serial_port.stop();
       serial_port = null;
+      // CHANGE COLOR OF CONNECT BUTTON HERE
     }
   }
   // Refresh button clicked
