@@ -1,9 +1,11 @@
 int PUL = 7; // PULSE PIN
 int DIR = 6; // DIRECTION PIN
 int ENA = 5; // ENABLE PIN
+
 int BASE_TICKS = 5000;
 int DELAY = 25; //fast enough
-int request;
+
+unsigned long time_out = 500;
 char ESTOP = 'E';
 bool DEBUG = true;
 String inString = "";
@@ -19,46 +21,27 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    while (Serial.available() > 0) {
-      int inChar = Serial.read();
-      if (isDigit(inChar)) {
-        inString += (char)inChar;
-      } else {
-        request = inChar;
-      }
-    } 
+  bool built = build_input();
+  if (DEBUG && built) Serial.println(inString);
+  delay(500);
+}
 
-//    long input = str.toInt();
-//    if (DEBUG) Serial.println(input);
-    
-    switch (request) {
-      case 97:
-        if (DEBUG) Serial.println("Biggest Left");
-        drive(BASE_TICKS * 10, HIGH);
-        break;
-      case 115:
-        if (DEBUG) Serial.println("Big Left");
-        drive(BASE_TICKS * 5, HIGH);
-        break;
-      case 100:
-        if (DEBUG) Serial.println("Left");
-        drive(BASE_TICKS, HIGH);
-        break;
-      case 106:
-        if (DEBUG) Serial.println("Right");
-        drive(BASE_TICKS, LOW);
-        break;
-      case 107:
-        if (DEBUG) Serial.println("Big Right");
-        drive(BASE_TICKS * 5, LOW);
-        break;
-      case 108:
-        if (DEBUG) Serial.println("Biggest Right");
-        drive(BASE_TICKS * 10, LOW);
-        break;
-      default:
-        if (DEBUG) Serial.println("Invalid Input");
+bool build_input() {
+  bool end = false;
+  unsigned long t = millis();
+  inString = "";
+  while (true) {
+    if (Serial.available() > 0) {
+      int inChar = Serial.read();
+      inString += (char)inChar;
+      if (inChar == 'M') {
+        end = true;
+        return true;
+      }
+    }
+    if (millis() > t + time_out) {
+      if (DEBUG) Serial.println("TIME OUT");
+      return false;
     }
   }
 }
