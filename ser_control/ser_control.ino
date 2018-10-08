@@ -10,6 +10,10 @@ char ESTOP = 'E';
 bool DEBUG = true;
 String inString = "";
 
+double displacement;
+double velocity;
+double cycles;
+
 void setup() {
   Serial.begin(9600);
   while (!Serial) {
@@ -22,7 +26,7 @@ void setup() {
 
 void loop() {
   bool built = build_input();
-  if (DEBUG && built) Serial.println(inString);
+  if (DEBUG && built) parse_input();
   delay(500);
 }
 
@@ -43,6 +47,25 @@ bool build_input() {
       if (DEBUG) Serial.println("TIME OUT");
       return false;
     }
+  }
+}
+
+bool parse_input() {
+  int p = inString.indexOf('P');
+  int v = inString.indexOf('V', p);
+  int c = inString.indexOf('C', v);
+  int m = inString.indexOf('M', m);
+  if (p == -1 or v == -1 or c == -1 or m == -1) return false;
+  displacement = (inString.substring(p+1,v)).toDouble();
+  velocity     = (inString.substring(v+1,c)).toDouble();
+  cycles       = (inString.substring(c+1,m)).toDouble();
+  if (DEBUG) {
+    Serial.print("Displacement: ");
+    Serial.println(displacement);
+    Serial.print("Velocity ");
+    Serial.println(velocity);
+    Serial.print("Cycles: ");
+    Serial.println(cycles);
   }
 }
 
