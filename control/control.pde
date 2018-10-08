@@ -13,19 +13,30 @@ Button btn_serial_list_refresh;    // refresh the serial port list
 String serial_list;                // list of serial ports
 int serial_list_index = 0;         // currently selected serial port 
 int num_serial_ports = 0;          // number of serial ports in the list
+int com_y = 30;
 
-// Comms
-//String
+String delta_x;
+String velocity_x;
+String cycles;
+
+boolean DEBUG = true;
+
+boolean active;
+boolean ready_x;
+boolean ready_dx;
+boolean ready_hz;
+boolean valid;
+boolean connected = false;
 
 void setup() {
-  size(315, 230);
-  
-  btn_serial_up = new Button("^", 140, 10, 40, 20);
-  btn_serial_dn = new Button("v", 140, 50, 40, 20);
-  btn_serial_connect = new Button("Connect", 190, 10, 100, 25);
-  btn_serial_disconnect = new Button("Disconnect", 190, 45, 100, 25);
-  btn_serial_list_refresh = new Button("Refresh", 190, 80, 100, 25);
-  
+  size(315, 260);
+
+  btn_serial_up = new Button("^", 140, com_y+10, 40, 20);
+  btn_serial_dn = new Button("v", 140, com_y+50, 40, 20);
+  btn_serial_connect = new Button("Connect", 190, com_y+10, 100, 25);
+  btn_serial_disconnect = new Button("Disconnect", 190, com_y+45, 100, 25);
+  btn_serial_list_refresh = new Button("Refresh", 190, com_y+80, 100, 25);
+
   serial_list = Serial.list()[serial_list_index];
   num_serial_ports = Serial.list().length;
   // GUI BUILDER
@@ -53,8 +64,9 @@ void mousePressed() {
   if (btn_serial_connect.MouseIsOver()) {
     if (serial_port == null) {
       // connect to the selected serial port
+      label5.setText("Connected");
       serial_port = new Serial(this, Serial.list()[serial_list_index], 9600);
-      // CHANGE COLOR OF CONNECT BUTTON HERE
+      connected = true;
     }
   }
   // Disconnect button clicked
@@ -63,7 +75,8 @@ void mousePressed() {
       // disconnect from the serial port
       serial_port.stop();
       serial_port = null;
-      // CHANGE COLOR OF CONNECT BUTTON HERE
+      label5.setText("Disconnected");
+      connected = false;
     }
   }
   // Refresh button clicked
@@ -75,17 +88,14 @@ void mousePressed() {
 }
 
 void draw() {
-  // draw the buttons in the application window
   btn_serial_up.Draw();
   btn_serial_dn.Draw();
   btn_serial_connect.Draw();
   btn_serial_disconnect.Draw();
   btn_serial_list_refresh.Draw();
-  // draw the text box containing the selected serial port
-  DrawTextBox("Select Port", serial_list, 10, 10, 120, 60);
+  DrawTextBox("Select Port", serial_list, 10, com_y+10, 120, 60);
 }
 
-// function for drawing a text box with title and contents
 void DrawTextBox(String title, String str, int x, int y, int w, int h)
 {
   fill(255);
@@ -98,15 +108,9 @@ void DrawTextBox(String title, String str, int x, int y, int w, int h)
   text(str, x + 10, y + 40, w - 20, h - 10);
 }
 
-// button class used for all buttons
 class Button {
   String label;
-  float x;    // top left corner x position
-  float y;    // top left corner y position
-  float w;    // width of button
-  float h;    // height of button
-  
-  // constructor
+  float x;  float y;  float w;  float h;
   Button(String labelB, float xpos, float ypos, float widthB, float heightB) {
     label = labelB;
     x = xpos;
@@ -114,8 +118,6 @@ class Button {
     w = widthB;
     h = heightB;
   }
-  
-  // draw the button in the window
   void Draw() {
     fill(218);
     stroke(141);
@@ -124,12 +126,25 @@ class Button {
     fill(0);
     text(label, x + (w / 2), y + (h / 2));
   }
-  
-  // returns true if the mouse cursor is over the button
   boolean MouseIsOver() {
     if (mouseX > x && mouseX < (x + w) && mouseY > y && mouseY < (y + h)) {
       return true;
     }
     return false;
   }
+}
+
+boolean send_data() {
+  serial_port.clear();
+  while (serial_port.available() == 0);
+  char c = serial_port.readChar();
+  active = c == 'R';
+  if (!connected || active || !ready_x || !ready_dx || !ready_hz) return false;
+  serial_port.write("P" + delta_x + "V" + velocity_x + "C" + cycles);
+  if (DEBUG) println("P" + delta_x + "V" + velocity_x + "C" + cycles);
+  return true;
+}
+
+void estop() {
+  serial_port.write("EEEEEEEE"); 
 }

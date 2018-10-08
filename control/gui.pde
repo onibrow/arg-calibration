@@ -16,24 +16,52 @@
 
 public void start_test(GButton source, GEvent event) { //_CODE_:start_button:264212:
   // START BUTTON
-  println("start_button - GButton >> GEvent." + event + " @ " + millis());
+  if (DEBUG) println("start_button pressed");
+  send_data();
+  active = true;
 } //_CODE_:start_button:264212:
 
 public void stop_test(GButton source, GEvent event) { //_CODE_:stop_button:289303:
   // STOP BUTTON
-  println("stop_button - GButton >> GEvent." + event + " @ " + millis());
+  if (DEBUG) println("*** ESTOP ***");
+  estop();
+  active = false;
 } //_CODE_:stop_button:289303:
 
 public void position(GTextArea source, GEvent event) { //_CODE_:x_input:412721:
-  println("x_input - GTextArea >> GEvent." + event + " @ " + millis());
+  try {
+    delta_x = x_input.getText(0).trim();
+    Double.valueOf(delta_x);
+    ready_x = true;
+  } 
+  catch (NumberFormatException nfe) {
+    if (DEBUG) println("x_input format invalid");
+    ready_x = false;
+  }
 } //_CODE_:x_input:412721:
 
 public void velocity_x(GTextArea source, GEvent event) { //_CODE_:vel_input:368130:
-  println("vel_input - GTextArea >> GEvent." + event + " @ " + millis());
+  try {
+    velocity_x = vel_input.getText(0).trim();
+    Double.valueOf(velocity_x);
+    ready_dx = true;
+  }
+  catch (NumberFormatException nfe) {
+    if (DEBUG) println("velocity_x format invalid");
+    ready_dx = false;
+  }
 } //_CODE_:vel_input:368130:
 
 public void cycle_x(GTextArea source, GEvent event) { //_CODE_:cycle_input:939489:
-  println("cycle_input - GTextArea >> GEvent." + event + " @ " + millis());
+  try {
+    cycles = cycle_input.getText(0).trim();
+    Double.valueOf(cycles);
+    ready_hz = true;
+  }
+  catch (NumberFormatException nfe) {
+    if (DEBUG) println("velocity_x format invalid");
+    ready_hz = false;
+  }
 } //_CODE_:cycle_input:939489:
 
 
@@ -45,37 +73,46 @@ public void createGUI(){
   G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
   G4P.setCursor(ARROW);
   surface.setTitle("Sketch Window");
-  start_button = new GButton(this, 10, 180, 140, 40);
+  start_button = new GButton(this, 10, 210, 140, 40);
   start_button.setText("Start");
   start_button.setTextBold();
   start_button.setLocalColorScheme(GCScheme.GREEN_SCHEME);
   start_button.addEventHandler(this, "start_test");
-  stop_button = new GButton(this, 160, 180, 140, 40);
+  stop_button = new GButton(this, 160, 210, 140, 40);
   stop_button.setText("Stop");
   stop_button.setTextBold();
   stop_button.setLocalColorScheme(GCScheme.RED_SCHEME);
   stop_button.addEventHandler(this, "stop_test");
-  x_input = new GTextArea(this, 10, 130, 90, 40, G4P.SCROLLBARS_NONE);
+  x_input = new GTextArea(this, 10, 160, 90, 40, G4P.SCROLLBARS_NONE);
   x_input.setOpaque(true);
   x_input.addEventHandler(this, "position");
-  vel_input = new GTextArea(this, 110, 130, 90, 40, G4P.SCROLLBARS_NONE);
+  vel_input = new GTextArea(this, 110, 160, 90, 40, G4P.SCROLLBARS_NONE);
   vel_input.setOpaque(true);
   vel_input.addEventHandler(this, "velocity_x");
-  cycle_input = new GTextArea(this, 210, 130, 90, 40, G4P.SCROLLBARS_NONE);
+  cycle_input = new GTextArea(this, 210, 160, 90, 40, G4P.SCROLLBARS_NONE);
   cycle_input.setOpaque(true);
   cycle_input.addEventHandler(this, "cycle_x");
-  label1 = new GLabel(this, 10, 110, 90, 20);
+  label1 = new GLabel(this, 10, 140, 90, 20);
   label1.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label1.setText("Δx[cm]");
   label1.setOpaque(false);
-  label2 = new GLabel(this, 110, 110, 90, 20);
+  label2 = new GLabel(this, 110, 140, 90, 20);
   label2.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label2.setText("Speed[cm/s]");
   label2.setOpaque(false);
-  label3 = new GLabel(this, 210, 110, 90, 20);
+  label3 = new GLabel(this, 210, 140, 90, 20);
   label3.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label3.setText("Num Cycles");
   label3.setOpaque(false);
+  label4 = new GLabel(this, 10, 10, 290, 20);
+  label4.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
+  label4.setText("Arias Research Group - Force Calibration");
+  label4.setLocalColorScheme(GCScheme.RED_SCHEME);
+  label4.setOpaque(false);
+  label5 = new GLabel(this, 10, 110, 90, 20);
+  label5.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
+  label5.setText("Disconnected");
+  label5.setOpaque(true);
 }
 
 // Variable declarations 
@@ -88,3 +125,5 @@ GTextArea cycle_input;
 GLabel label1; 
 GLabel label2; 
 GLabel label3; 
+GLabel label4; 
+GLabel label5; 
