@@ -136,12 +136,17 @@ class Button {
 
 boolean send_data() {
   serial_port.clear();
-  while (serial_port.available() == 0);
-  char c = serial_port.readChar();
-  active = c == 'R';
+  //while (serial_port.available() == 0);
+  //char c = serial_port.readChar();
+  //active = c == 'R';
+  active = false;
+  println(connected + " " + active + " " + ready_x + " " + ready_dx + " " + ready_hz);
   if (!connected || active || !ready_x || !ready_dx || !ready_hz) return false;
-  serial_port.write("P" + delta_x + "V" + velocity_x + "C" + cycles);
-  if (DEBUG) println("P" + delta_x + "V" + velocity_x + "C" + cycles);
+  serial_port.write("P" + delta_x + "V" + velocity_x + "C" + cycles + "M");
+  if (DEBUG) {
+    println("Writing: P" + delta_x + "V" + velocity_x + "C" + cycles + "M");
+    println("Echoed: " + serial_port.readString());
+  }
   return true;
 }
 
