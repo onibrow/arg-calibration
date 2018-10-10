@@ -17,7 +17,7 @@
 public void start_test(GButton source, GEvent event) { //_CODE_:start_button:264212:
   // START BUTTON
   boolean ack = send_data();
-  if (DEBUG) println("start_button pressed: ack is " + ack);
+  if (DEBUG) println("Sent data is   " + ack);
   active = true;
 } //_CODE_:start_button:264212:
 

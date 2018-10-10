@@ -135,6 +135,7 @@ class Button {
 }
 
 boolean send_data() {
+  if (!connected) return false;
   serial_port.clear();
   //while (serial_port.available() == 0);
   //char c = serial_port.readChar();

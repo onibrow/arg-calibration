@@ -12,7 +12,7 @@ String inString = "";
 
 double displacement;
 double velocity;
-double cycles;
+int cycles;
 
 void setup() {
   Serial.begin(9600);
@@ -58,7 +58,7 @@ bool parse_input() {
   if (p == -1 or v == -1 or c == -1 or m == -1) return false;
   displacement = (inString.substring(p+1,v)).toDouble();
   velocity     = (inString.substring(v+1,c)).toDouble();
-  cycles       = (inString.substring(c+1,m)).toDouble();
+  cycles       = (inString.substring(c+1,m)).toInt();
   if (DEBUG) {
     Serial.print("Displacement: ");
     Serial.println(displacement);
@@ -91,4 +91,3 @@ void drive(int ticks, int forwards) {
   if (DEBUG) Serial.println("Ready");
   digitalWrite(ENA, HIGH);
 }
-
