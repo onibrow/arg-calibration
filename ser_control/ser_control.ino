@@ -2,17 +2,18 @@ int PUL = 7; // PULSE PIN
 int DIR = 6; // DIRECTION PIN
 int ENA = 5; // ENABLE PIN
 
-int BASE_TICKS = 5000;
-int DELAY = 25; //fast enough
-
 unsigned long time_out = 500;
 char ESTOP = 'E';
 bool DEBUG = true;
+double TICK_MM = 3125;
+int MAX_SPEED = 16;
 String inString = "";
 
 double displacement;
 double velocity;
 int cycles;
+bool running = false;
+bool one_way = false;
 
 void setup() {
   Serial.begin(9600);
@@ -25,9 +26,8 @@ void setup() {
 }
 
 void loop() {
-  bool built = build_input();
-  if (DEBUG && built) parse_input();
-  delay(500);
+  if (build_input() && parse_input() && !running) drive();
+  delay(10);
 }
 
 bool build_input() {
@@ -44,7 +44,7 @@ bool build_input() {
       }
     }
     if (millis() > t + time_out) {
-      if (DEBUG) Serial.println("TIME OUT");
+      //      if (DEBUG) Serial.println("TIME OUT");
       return false;
     }
   }
@@ -56,9 +56,9 @@ bool parse_input() {
   int c = inString.indexOf('C', v);
   int m = inString.indexOf('M', m);
   if (p == -1 or v == -1 or c == -1 or m == -1) return false;
-  displacement = (inString.substring(p+1,v)).toDouble();
-  velocity     = (inString.substring(v+1,c)).toDouble();
-  cycles       = (inString.substring(c+1,m)).toInt();
+  displacement = (inString.substring(p + 1, v)).toDouble();
+  velocity     = min(MAX_SPEED, (inString.substring(v + 1, c)).toDouble());
+  cycles       = (inString.substring(c + 1, m)).toInt();
   if (DEBUG) {
     Serial.print("Displacement: ");
     Serial.println(displacement);
@@ -67,27 +67,73 @@ bool parse_input() {
     Serial.print("Cycles: ");
     Serial.println(cycles);
   }
+  return true;
 }
 
-void drive(int ticks, int forwards) {
+void drive() {
   digitalWrite(ENA, LOW);
-  if (DEBUG) Serial.println("Driving");
-  digitalWrite(DIR, forwards);
-  for (int i = 0; i, i < ticks; i++) {
-    // ESTOP
-    if (Serial.available() > 0) {
-      if (Serial.read() == ESTOP) return;
-    }
-    // Pulse
-    digitalWrite(PUL, HIGH);
-    delayMicroseconds(DELAY);
-    digitalWrite(PUL, LOW);
-    delayMicroseconds(DELAY);
+  running = true;
+
+  // One Way Adjustment
+  if (cycles == 0) {one_way = true; cycles = 1;}
+  else one_way = false;
+  
+  // Math
+  bool dir = displacement > 0;
+  if (DEBUG) {
+    Serial.print("Direction: ");
+    Serial.println(dir);
   }
+  double tick_interval = 1e6 / velocity / TICK_MM / 3; // FILL IN
+  double ticks = abs(TICK_MM * displacement);
+
+  if (DEBUG) {Serial.print("Begin Driving @ "); Serial.println(millis());}
+
+  for (int i = 0; i < cycles; i++) {
+    // Destination Trip
+    digitalWrite(DIR, dir);
+    for (double j = 0; j < ticks; j++) {
+      // ESTOP
+      if (Serial.available() > 0) {
+        if (Serial.read() == ESTOP) {
+          if (DEBUG) Serial.println("***ESTOP***");
+          running = false;
+          return;
+        }
+      }
+      // Pulse
+      digitalWrite(PUL, HIGH);
+      delayMicroseconds(tick_interval);
+      digitalWrite(PUL, LOW);
+      delayMicroseconds(tick_interval);
+    }
+    if (!one_way) {
+      // Return Trip
+      digitalWrite(DIR, !dir);
+      for (double j = 0; j < ticks; j++) {
+        // ESTOP
+        if (Serial.available() > 0) {
+          if (Serial.read() == ESTOP) {
+            if (DEBUG) Serial.println("***ESTOP***");
+            running = false;
+            return;
+          }
+        }
+        // Pulse
+        digitalWrite(PUL, HIGH);
+        delayMicroseconds(tick_interval);
+        digitalWrite(PUL, LOW);
+        delayMicroseconds(tick_interval);
+      }
+    }
+  }
+
   // Flush Incoming Buffer
   while (Serial.available() > 0) {
     char t = Serial.read();
   }
-  if (DEBUG) Serial.println("Ready");
+
+  if (DEBUG) {Serial.print("End Driving @ "); Serial.println(millis());}
   digitalWrite(ENA, HIGH);
+  running = false;
 }
