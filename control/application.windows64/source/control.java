@@ -302,7 +302,6 @@ GLabel label2;
 GLabel label3; 
 GLabel label4; 
 GLabel label5; 
-
   public void settings() {  size(315, 260); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "control" };
