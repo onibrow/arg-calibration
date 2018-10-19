@@ -5,7 +5,7 @@ int ENA = 5; // ENABLE PIN
 unsigned long time_out = 500;
 char ESTOP = 'E';
 bool DEBUG = true;
-double TICK_MM = 3125;
+double TICK_MM = 625;
 int MAX_SPEED = 16;
 String inString = "";
 
@@ -56,7 +56,7 @@ bool parse_input() {
   int c = inString.indexOf('C', v);
   int m = inString.indexOf('M', m);
   if (p == -1 or v == -1 or c == -1 or m == -1) return false;
-  displacement = (inString.substring(p + 1, v)).toDouble();
+  displacement = (inString.substring(p + 1, v)).toDouble() / 10;
   velocity     = min(MAX_SPEED, (inString.substring(v + 1, c)).toDouble());
   cycles       = (inString.substring(c + 1, m)).toInt();
   if (DEBUG) {
@@ -80,17 +80,24 @@ void drive() {
   
   // Math
   bool dir = displacement > 0;
-  if (DEBUG) {
-    Serial.print("Direction: ");
-    Serial.println(dir);
-  }
-  double tick_interval = 1e6 / velocity / TICK_MM / 3; // FILL IN
+
+  double tick_interval = 1e6 / velocity / TICK_MM * 39/40;
+  
   double ticks = abs(TICK_MM * displacement);
+
+  if (DEBUG) {
+    Serial.print("Ticks: ");
+    Serial.println(ticks);
+    Serial.print("Tick Interval: ");
+    Serial.println(tick_interval);
+    Serial.print("Cycles: ");
+    Serial.println(cycles);
+  }
 
   if (DEBUG) {Serial.print("Begin Driving @ "); Serial.println(millis());}
 
   for (int i = 0; i < cycles; i++) {
-    // Destination Trip
+    // Destination Trip   
     digitalWrite(DIR, dir);
     for (double j = 0; j < ticks; j++) {
       // ESTOP
